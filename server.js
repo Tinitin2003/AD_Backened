@@ -18,14 +18,14 @@ app.post('/register',(req,res)=>{
     console.log(email);
     const password=req.body.password;
     console.log(password);
-    console.log("regiter");
-    con.query("select * from AD_User_Detail where Email=? and Password=?",[email,password],
+    con.query("select * from AD_User_Detail where Email=? ",[email],
         (err,result)=>{
             if(err){
                 req.setEncoding({err:err});
             }else{
              if(result.length>0){
                 res.send({message: "Email already in use"});
+                console.log("already in use");
              }
              else{
                 con.query("insert into AD_User_Detail (Name,Email,Password) values(?,?,?)",[username,email,password],
