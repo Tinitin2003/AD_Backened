@@ -4,7 +4,9 @@ const cors=require("cors");
 const app=express();
 
 app.use(express.json());
-app.use(cors());
+app.use(cors({
+    origin: "https://anantdarshan.netlify.app/",
+}));
 const con= mysql.createConnection({
     host: "sql6.freesqldatabase.com",
     user: "sql6588358",
