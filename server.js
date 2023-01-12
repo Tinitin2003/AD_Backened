@@ -19,12 +19,25 @@ app.post('/register',(req,res)=>{
     const password=req.body.password;
     console.log(password);
     console.log("regiter");
-    con.query("insert into AD_User_Detail (Name,Email,Password) values(?,?,?)",[username,email,password],
+    con.query("select * from AD_User_Detail where Email=? and Password=?",[email,password],
         (err,result)=>{
-            if(result){
-                res.send(result);
+            if(err){
+                req.setEncoding({err:err});
             }else{
-                res.send({message: "Enter Incorrect"})
+             if(result.length>0){
+                res.send({message: "Email already in use"});
+             }
+             else{
+                con.query("insert into AD_User_Detail (Name,Email,Password) values(?,?,?)",[username,email,password],
+                (err,result)=>{
+                    if(result){
+                        res.send(result);
+                    }else{
+                        res.send({message: "Enter Incorrect"})
+                    }
+                }
+            )
+             }
             }
         }
     )
