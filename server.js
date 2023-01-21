@@ -45,6 +45,7 @@ app.post('/register',(req,res)=>{
 })
 app.post('/login',(req,res)=>{
     const email=req.body.email;
+    console.log(email);
     const password=req.body.password;
     con.query("select * from User where Email=? and Password=?",[email,password],
         (err,result)=>{
