@@ -19,7 +19,7 @@ app.post('/register',(req,res)=>{
     console.log(email);
     const password=req.body.password;
     console.log(password);
-    con.query("select * from AD_Database where Email=? ",[email],
+    con.query("select * from User where Email=? ",[email],
         (err,result)=>{
             if(err){
                 req.setEncoding({err:err});
@@ -29,7 +29,7 @@ app.post('/register',(req,res)=>{
                 console.log("already in use");
              }
              else{
-                con.query("insert into AD_Database (Name,Email,Password) values(?,?,?)",[username,email,password],
+                con.query("insert into User (Name,Email,Password) values(?,?,?)",[username,email,password],
                 (err,result)=>{
                     if(result){
                         res.send(result);
@@ -46,7 +46,7 @@ app.post('/register',(req,res)=>{
 app.post('/login',(req,res)=>{
     const email=req.body.email;
     const password=req.body.password;
-    con.query("select * from AD_Database where Email=? and Password=?",[email,password],
+    con.query("select * from User where Email=? and Password=?",[email,password],
         (err,result)=>{
             if(err){
                 req.setEncoding({err:err});
