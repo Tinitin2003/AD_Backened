@@ -4,14 +4,13 @@ const cors=require("cors");
 const app=express();
 
 app.use(express.json());
-app.use(cors({
-    origin: "*",
-}));
+app.use(cors());
 const con= mysql.createConnection({
-    host: "sql6.freesqldatabase.com",
-    user: "sql6588358",
-    password: "btB6GzPkwa",
-    database:"sql6588358"
+    host: "database-1.cr0drigbvyvh.ap-northeast-1.rds.amazonaws.com",
+    port: "3306",
+    user: "admin",
+    password: "nitinpanwar",
+    database:"AD_Database"
 })
 app.post('/register',(req,res)=>{
     const username=req.body.username;
@@ -58,7 +57,7 @@ app.post('/login',(req,res)=>{
              else{
                 res.send({message: "Wrong username or password"});
              }
-            }
+            
         }
     )
 })
