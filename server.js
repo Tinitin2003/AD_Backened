@@ -2,9 +2,12 @@ const express=require("express");
 const mysql=require("mysql");
 const cors=require("cors");
 const app=express();
-
+const bcrypt=require("bcryptjs");
 app.use(express.json());
 app.use(cors());
+const {MongoClient}=require('mongodb');
+const url='mongodb+srv://Nitin:dehradun@cluster0.avvriof.mongodb.net/?retryWrites=true&w=majority'
+const client=new MongoClient(url);
 const con= mysql.createConnection({
     host: "database-1.cr0drigbvyvh.ap-northeast-1.rds.amazonaws.com",
     port: "3306",
@@ -12,13 +15,12 @@ const con= mysql.createConnection({
     password: "nitinpanwar",
     database:"AD_Database"
 })
-app.post('/register',(req,res)=>{
+app.post('/register',async(req,res)=>{
     const username=req.body.username;
-    console.log(username);
     const email=req.body.email;
-    console.log(email);
-    const password=req.body.password;
-    console.log(password);
+    const salt=await bcrypt.genSalt(10);
+    const secPass=await bcrypt.hash(req.body.password,salt);
+    const password=secPass;
     con.query("select * from User where Email=? ",[email],
         (err,result)=>{
             if(err){
@@ -26,7 +28,6 @@ app.post('/register',(req,res)=>{
             }else{
              if(result.length>0){
                 res.send({message: "Email already in use"});
-                console.log("already in use");
              }
              else{
                 con.query("insert into User (Name,Email,Password) values(?,?,?)",[username,email,password],
@@ -43,17 +44,19 @@ app.post('/register',(req,res)=>{
         }
     )
 })
-app.post('/login',(req,res)=>{
+app.post('/login',async (req,res)=>{
     const email=req.body.email;
-    console.log(email);
     const password=req.body.password;
-    con.query("select * from User where Email=? and Password=?",[email,password],
-        (err,result)=>{
+    con.query("select * from User where Email=?",[email],
+        async (err,result)=>{
             if(err){
                 req.setEncoding({err:err});
             }else{
-             if(result.length>0){
+                var data=JSON.parse(JSON.stringify(result))
+             if(await bcrypt.compare(password,data[0].Password)){
                 res.send(result);
+             
+                console.log(data[0].Password);
              }
              else{
                 res.send({message: "Wrong username or password"});
@@ -63,6 +66,19 @@ app.post('/login',(req,res)=>{
     }
     )
 })
+
+async function getData(){
+}
+getData();
+app.get('/getdata',async (req,res)=>{
+    let result= await client.connect();
+    let db=result.db('movie-api-db')
+    let collection=db.collection('movies');
+    let response=await collection.find({}).toArray();
+     res.send(response)
+})
+
+
 app.listen(3001,()=>{
     console.log("server is running");
 })
